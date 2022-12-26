@@ -1,0 +1,15 @@
+dataset: CSL
+num_workers: 8
+model:
+  name: GraphMLPMixer
+  gnn_type: GINEConv
+  nlayer_gnn: 4
+  nlayer_mlpmixer: 4
+train:
+  runs: 4
+  lr_patience: 50
+  epochs: 200
+metis:
+  n_patches: 32
+pos_enc:
+  rw_dim: 8

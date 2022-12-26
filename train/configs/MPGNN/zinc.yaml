@@ -1,0 +1,14 @@
+dataset: ZINC
+num_workers: 8
+model:
+  name: MPGNN
+  gnn_type: GINEConv
+  nlayer_gnn: 4
+  nlayer_mlpmixer: 0
+train:
+  lr_patience: 100
+  epochs: 2000
+metis:
+  n_patches: 0
+pos_enc:
+  rw_dim: 20

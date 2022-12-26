@@ -1,0 +1,16 @@
+dataset: TreeDataset
+depth: 5
+num_workers: 8
+seed: 0
+model:
+  name: MPGNN4TreeNeighbour
+  gnn_type: GINEConv
+  nlayer_gnn: 4
+  nlayer_mlpmixer: 0
+train:
+  lr_patience: 1000
+  batch_size: 1024
+  epochs: 1000
+  runs: 1
+metis:
+  n_patches: 0

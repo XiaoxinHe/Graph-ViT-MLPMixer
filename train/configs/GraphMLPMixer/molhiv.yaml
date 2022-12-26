@@ -1,0 +1,17 @@
+dataset: ogbg-molhiv
+num_workers: 8
+model:
+  name: GraphMLPMixer
+  gnn_type: GINEConv
+  nlayer_gnn: 2
+  nlayer_mlpmixer: 2
+train:
+  runs: 4
+  lr: 0.01
+  lr_patience: 50
+  batch_size: 32
+  optimizer: ASAM
+  epochs: 200
+  dropout: 0.3
+metis:
+  n_patches: 32
