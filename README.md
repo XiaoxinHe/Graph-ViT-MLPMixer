@@ -1,8 +1,22 @@
 # Graph-MLPMixer
+[![arXiv](https://img.shields.io/badge/arXiv-2205.12454-b31b1b.svg)](https://arxiv.org/abs/2212.13350)
 
-
+# Citation
+```
+@misc{he2022generalization,
+      title={A Generalization of ViT/MLP-Mixer to Graphs}, 
+      author={Xiaoxin He and Bryan Hooi and Thomas Laurent and Adam Perold and Yann LeCun and Xavier Bresson},
+      year={2022},
+      eprint={2212.13350},
+      archivePrefix={arXiv},
+      primaryClass={cs.CV}
+}
+```
 
 # Python environment setup with Conda
+
+
+
 
 
 ```
@@ -95,8 +109,4 @@ python -m train.zinc metis.n_patches P
 
 # Reproducibility
 Use `run.sh` to run the codes and reproduce the published results.
-
-
-# Citation
-
 
