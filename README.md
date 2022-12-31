@@ -25,7 +25,7 @@ conda activate graph_mlpmixer
 pip install torch==1.11.0+cu113 torchvision==0.12.0+cu113 torchaudio==0.11.0 --extra-index-url https://download.pytorch.org/whl/cu113 
 
 python -c "import torch; print(torch.__version__)"
-python -c "import torch; print(torch.version.cuda)
+python -c "import torch; print(torch.version.cuda)"
 pip install torch-scatter -f https://data.pyg.org/whl/torch-1.11.0+cu113.html
 pip install torch-sparse -f https://data.pyg.org/whl/torch-1.11.0+cu113.html
 pip install torch-cluster -f https://data.pyg.org/whl/torch-1.11.0+cu113.html
