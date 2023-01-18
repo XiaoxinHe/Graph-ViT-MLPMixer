@@ -16,22 +16,14 @@
 # Python environment setup with Conda
 
 
-
-
-
 ```
 conda create --name graph_mlpmixer python=3.8
 conda activate graph_mlpmixer
-pip install torch==1.11.0+cu113 torchvision==0.12.0+cu113 torchaudio==0.11.0 --extra-index-url https://download.pytorch.org/whl/cu113 
 
-python -c "import torch; print(torch.__version__)"
-python -c "import torch; print(torch.version.cuda)"
-pip install torch-scatter -f https://data.pyg.org/whl/torch-1.11.0+cu113.html
-pip install torch-sparse -f https://data.pyg.org/whl/torch-1.11.0+cu113.html
-pip install torch-cluster -f https://data.pyg.org/whl/torch-1.11.0+cu113.html
-
-pip install torch-geometric
+conda install pytorch==1.12.1 torchvision==0.13.1 torchaudio==0.12.1 cudatoolkit=11.3 -c pytorch
+conda install pyg -c pyg
 pip install ogb
+conda install -c conda-forge rdkit
 pip install yacs
 pip install tensorboard
 pip install networkx
@@ -40,9 +32,6 @@ pip install einops
 # METIS
 conda install -c conda-forge metis
 pip install metis
-
-# LRGB
-conda install openbabel fsspec rdkit -c conda-forge
 ```
 
 # Running Graph MLPMixer
@@ -85,16 +74,16 @@ python -m train.peptides_func model.name MPGNN metis.n_patches 0
 ## Run ablation studies
 See `core/config.py` for all options.
 ```
-# Running Graph MLPMixer wo/ NodePE
+# Running Graph MLPMixer w/o NodePE
 python -m train.zinc pos_enc.rw_dim 0 pos_enc.lap_dim 0
 
-# Running Graph MLPMixer wo/ PatchPE
+# Running Graph MLPMixer w/o PatchPE
 python -m train.zinc model.use_patch_pe False
 
-# Running Graph MLPMixer wo/ data augmentation
+# Running Graph MLPMixer w/o data augmentation
 python -m train.zinc metis.online False
 
-# Running Graph MLPMixer wo/ patch overlapping
+# Running Graph MLPMixer w/o patch overlapping
 python -m train.zinc metis.num_hops 0
 
 # Running Graph MLPMixer w/ k-hop extension (replace k with 1,2,...)
