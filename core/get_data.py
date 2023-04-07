@@ -170,7 +170,7 @@ def create_dataset(cfg):
 if __name__ == '__main__':
     print("Generating data")
 
-    cfg.merge_from_file('train/configs/molhiv.yaml')
+    cfg.merge_from_file('train/configs/GraphMLPMixer/zinc.yaml')
     cfg = update_cfg(cfg)
     cfg.metis.n_patches = 0
     train_dataset, val_dataset, test_dataset = create_dataset(cfg)
