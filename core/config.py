@@ -19,7 +19,7 @@ def set_cfg(cfg):
     # Custom log file name
     cfg.logfile = None
     # tree depth for TreeDataset
-    cfg.depth=-1
+    cfg.depth = -1
 
     # ------------------------------------------------------------------------ #
     # Training options
@@ -52,10 +52,10 @@ def set_cfg(cfg):
     # Model options
     # ------------------------------------------------------------------------ #
     cfg.model = CN()
-    # Model name [GraphMLPMixer, GraphViT, GNN]
-    cfg.model.name = 'GraphMLPMixer'
     # GNN type used, see core.model_utils.pyg_gnn_wrapper for all options
     cfg.model.gnn_type = 'GINEConv'  # change to list later
+    # GraphMLPMixer or graph-based multihead attention: [MLPMixer, Hadamard, Standard, Graph, Addictive, Kernel]
+    cfg.model.gMHA_type = 'MLPMixer'
     # Hidden size of the model
     cfg.model.hidden_size = 128
     # Number of gnn layers
@@ -66,17 +66,19 @@ def set_cfg(cfg):
     cfg.model.pool = 'mean'
     # Use residual connection
     cfg.model.residual = True
-    # Whether use coarsen adj to modify patch embedding
-    cfg.model.use_patch_pe = True
 
     # ------------------------------------------------------------------------ #
     # Positional encoding options
     # ------------------------------------------------------------------------ #
     cfg.pos_enc = CN()
-    # Laplacian eigenvectors positional encoding
-    cfg.pos_enc.lap_dim = 0
     # Random walk structural encoding
     cfg.pos_enc.rw_dim = 0
+    # Laplacian eigenvectors positional encoding
+    cfg.pos_enc.lap_dim = 0
+    # Patch random walk structural encoding
+    cfg.pos_enc.patch_rw_dim = 8
+    # Patch PE diffusion steps
+    cfg.pos_enc.patch_num_diff = -1
 
     # ------------------------------------------------------------------------ #
     # Metis patch extraction options

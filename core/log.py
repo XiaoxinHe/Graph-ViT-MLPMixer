@@ -7,14 +7,19 @@ import shutil
 import datetime
 
 
-def config_logger(cfg, OUT_PATH="results/", time=False):
+def config_logger(cfg, OUT_PATH="results/", time=True):
     # time option is used for debugging different model architecture.
     data_name = cfg.dataset
 
     # generate config_string
     os.makedirs(OUT_PATH, exist_ok=True)
     if cfg.logfile is None:
-        config_string = cfg.model.name + '_' + cfg.model.gnn_type
+        if cfg.metis.n_patches > 0:
+            model_name = cfg.model.gMHA_type
+        else:
+            model_name = 'MPGNN'
+            config_string = f'{model_name}_{cfg.model.gnn_type}_{datetime.datetime.now().strftime("%Y%m%d_%H%M%S")}'
+        # TreeNeighbour Dataset
         if cfg.depth > 0:
             config_string = config_string + '_depth' + str(cfg.depth)
     else:

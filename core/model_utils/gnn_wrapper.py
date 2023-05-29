@@ -1,10 +1,6 @@
-from torch_geometric.utils import degree
-from torch_scatter import scatter
-import torch
 import torch.nn as nn
 import torch_geometric.nn as gnn
 from core.model_utils.elements import MLP
-import torch.nn.functional as F
 
 
 class GCNConv(nn.Module):

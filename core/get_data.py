@@ -1,18 +1,18 @@
-import torch
-from torch_geometric.transforms import Compose
-from torch_geometric.datasets import GNNBenchmarkDataset
-from torch_geometric.utils import to_undirected
-
-from torch_geometric.datasets import ZINC
 from core.data_utils.peptides_functional import PeptidesFunctionalDataset
 from core.data_utils.peptides_structural import PeptidesStructuralDataset
-from core.data_utils.sr25 import SRDataset
-from core.data_utils.tree_dataset import TreeDataset
-from core.transform import MetisPartitionTransform, PositionalEncodingTransform, RandomPartitionTransform
-from core.data_utils.exp import PlanarSATPairsDataset
 
-from core.config import cfg, update_cfg
 import numpy as np
+import torch
+from torch_geometric.transforms import Compose
+from torch_geometric.utils import to_undirected
+from core.config import cfg, update_cfg
+
+from torch_geometric.datasets import GNNBenchmarkDataset
+from torch_geometric.datasets import ZINC
+from core.data_utils.sr25 import SRDataset
+from core.data_utils.exp import PlanarSATPairsDataset
+from core.data_utils.tree_dataset import TreeDataset
+from core.transform import GraphPartitionTransform, PositionalEncodingTransform
 
 
 def calculate_stats(dataset):
@@ -51,24 +51,23 @@ def create_dataset(cfg):
         transform_train = transform_eval = None
 
     if cfg.metis.n_patches > 0:
-        # metis partition
-        if cfg.metis.enable:
-            _transform_train = MetisPartitionTransform(n_patches=cfg.metis.n_patches,
-                                                       drop_rate=cfg.metis.drop_rate,
-                                                       num_hops=cfg.metis.num_hops,
-                                                       is_directed=cfg.dataset == 'TreeDataset')
+        _transform_train = GraphPartitionTransform(n_patches=cfg.metis.n_patches,
+                                                   metis=cfg.metis.enable,
+                                                   drop_rate=cfg.metis.drop_rate,
+                                                   num_hops=cfg.metis.num_hops,
+                                                   is_directed=cfg.dataset == 'TreeDataset',
+                                                   patch_rw_dim=cfg.pos_enc.patch_rw_dim,
+                                                   patch_num_diff=cfg.pos_enc.patch_num_diff)
 
-            _transform_eval = MetisPartitionTransform(n_patches=cfg.metis.n_patches,
-                                                      drop_rate=0.0,
-                                                      num_hops=cfg.metis.num_hops,
-                                                      is_directed=cfg.dataset == 'TreeDataset')
-        # random partition
-        else:
-            _transform_train = RandomPartitionTransform(
-                n_patches=cfg.metis.n_patches, num_hops=cfg.metis.num_hops)
-            _transform_eval = RandomPartitionTransform(
-                n_patches=cfg.metis.n_patches, num_hops=cfg.metis.num_hops)
-        if cfg.dataset == 'MNIST' or cfg.dataset == 'CIFAR10' or cfg.dataset == 'CSL':
+        _transform_eval = GraphPartitionTransform(n_patches=cfg.metis.n_patches,
+                                                  metis=cfg.metis.enable,
+                                                  drop_rate=0.0,
+                                                  num_hops=cfg.metis.num_hops,
+                                                  is_directed=cfg.dataset == 'TreeDataset',
+                                                  patch_rw_dim=cfg.pos_enc.patch_rw_dim,
+                                                  patch_num_diff=cfg.pos_enc.patch_num_diff)
+
+        if cfg.dataset in ['MNIST', 'CIFAR10', 'CSL']:
             transform_train = Compose([transform_train, _transform_train])
             transform_eval = Compose([transform_eval, _transform_eval])
         else:
@@ -138,6 +137,7 @@ def create_dataset(cfg):
         dataset.data.y = torch.arange(len(dataset.data.y)).long()
         dataset = [x for x in dataset]
         return dataset, dataset, dataset
+
     elif cfg.dataset == 'TreeDataset':
         root = 'dataset/TreeDataset'
         dataset = TreeDataset(root, cfg.depth)
@@ -146,14 +146,8 @@ def create_dataset(cfg):
             train_dataset = [transform_train(x) for x in train_dataset]
             val_dataset = [transform_train(x) for x in val_dataset]
             test_dataset = [transform_train(x) for x in test_dataset]
-        print('------------Train--------------')
-        calculate_stats(train_dataset)
-        print('------------Validation--------------')
-        calculate_stats(val_dataset)
-        print('------------Test--------------')
-        calculate_stats(test_dataset)
-        print('------------------------------')
         return train_dataset, val_dataset, test_dataset
+
     else:
         print("Dataset not supported.")
         exit(1)

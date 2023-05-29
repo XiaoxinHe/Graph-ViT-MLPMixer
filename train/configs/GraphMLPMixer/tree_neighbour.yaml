@@ -1,13 +1,12 @@
 dataset: TreeDataset
-depth: 5
+depth: 4
 num_workers: 8
 seed: 0
 model:
-  name: GraphMLPMixer4TreeNeighbour
+  gMHA_type: MLPMixer
   gnn_type: GINEConv
   nlayer_gnn: 4
   nlayer_mlpmixer: 4
-  use_patch_pe: False
 train:
   lr_patience: 1000
   batch_size: 1024
@@ -17,3 +16,7 @@ metis:
   n_patches: 32
   online: False
   drop_rate: 0.0
+pos_enc:
+  rw_dim: 0
+  lap_dim: 0
+  patch_rw_dim: 0

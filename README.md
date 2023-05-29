@@ -38,11 +38,11 @@ conda install -c conda-forge metis
 pip install metis
 ```
 
-# Running Graph MLPMixer
+# Run Graph MLPMixer
 
 ## Run different datasets
 
-See all available datasets under `train` folder.
+See all available datasets under the `train/` folder.
 
 ```
 # Running Graph MLPMixer on simulation datasets
@@ -71,15 +71,9 @@ python -m train.zinc model.gnn_type ResGatedGraphConv
 ...
 ```
 
-## Run normal GNNs
 
-Run normal GNNs by specifying model name and setting n_patches to zero.
 
-```
-python -m train.zinc model.name MPGNN metis.n_patches 0
-python -m train.peptides_func model.name MPGNN metis.n_patches 0
-...
-```
+
 
 ## Run ablation studies
 
@@ -90,7 +84,7 @@ See `core/config.py` for all options.
 python -m train.zinc pos_enc.rw_dim 0 pos_enc.lap_dim 0
 
 # Running Graph MLPMixer w/o PatchPE
-python -m train.zinc model.use_patch_pe False
+python -m train.zinc model.patch_rw_dim 0
 
 # Running Graph MLPMixer w/o data augmentation
 python -m train.zinc metis.online False
@@ -101,11 +95,40 @@ python -m train.zinc metis.num_hops 0
 # Running Graph MLPMixer w/ k-hop extension (replace k with 1,2,...)
 python -m train.zinc metis.num_hops k
 
-# Running Graph MLPMixer w/ random node partition
+# Running Graph MLPMixer using random partition
 python -m train.zinc metis.enable False
 
-# Running Graph MLPMixer w/ different number of Patches P
+# Running Graph MLPMixer w/ different numbers of Patches P
 python -m train.zinc metis.n_patches P
+```
+
+# Run Graph ViT
+We provide five different versions of Graph ViT. The versions primarily differ in the graph-based multi-head attention (gMHA) function used. 
+```
+# Hadamard Attention
+python -m train.zinc model.gMHA_type Hadamard pos_enc.patch_num_diff 0
+
+# Standard/Full Attention
+python -m train.zinc model.gMHA_type Standard pos_enc.patch_num_diff -1
+
+# Graph Attention
+python -m train.zinc model.gMHA_type Graph pos_enc.patch_num_diff 0
+
+# Kernel Attention
+python -m train.zinc model.gMHA_type Kernel pos_enc.patch_num_diff 8
+
+# Additive Attention 
+python -m train.zinc model.gMHA_type Additive pos_enc.patch_num_diff 0
+```
+
+# Run MP-GNNs
+
+Run MP-GNNs by setting n_patches to zero.
+
+```
+python -m train.zinc model.name MPGNN metis.n_patches 0
+python -m train.peptides_func model.name MPGNN metis.n_patches 0
+...
 ```
 
 # Reproducibility

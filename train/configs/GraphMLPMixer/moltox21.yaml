@@ -1,7 +1,7 @@
 dataset: ogbg-moltox21
 num_workers: 8
 model:
-  name: GraphMLPMixer
+  gMHA_type: MLPMixer
   gnn_type: GINEConv
   nlayer_gnn: 4
   nlayer_mlpmixer: 4
@@ -15,3 +15,7 @@ train:
   dropout: 0.3
 metis:
   n_patches: 32
+pos_enc:
+  rw_dim: 0
+  lap_dim: 0
+  patch_rw_dim: 0

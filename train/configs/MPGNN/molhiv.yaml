@@ -1,7 +1,6 @@
 dataset: ogbg-molhiv
 num_workers: 8
 model:
-  name: MPGNN
   gnn_type: GINEConv
   nlayer_gnn: 2
   nlayer_mlpmixer: 0

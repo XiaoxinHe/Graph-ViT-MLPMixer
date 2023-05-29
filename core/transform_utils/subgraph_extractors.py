@@ -1,12 +1,33 @@
-import math
-from torch_sparse import mul
-from torch_cluster import random_walk
 import torch
 from torch_sparse import SparseTensor  # for propagation
 import numpy as np
 import metis
 import torch_geometric
 import networkx as nx
+
+
+def k_hop_subgraph(edge_index, num_nodes, num_hops, is_directed=False):
+    # return k-hop subgraphs for all nodes in the graph
+    if is_directed:
+        row, col = edge_index
+        birow, bicol = torch.cat([row, col]), torch.cat([col, row])
+        edge_index = torch.stack([birow, bicol])
+    else:
+        row, col = edge_index
+    sparse_adj = SparseTensor(
+        row=row, col=col, sparse_sizes=(num_nodes, num_nodes))
+    # each one contains <= i hop masks
+    hop_masks = [torch.eye(num_nodes, dtype=torch.bool,
+                           device=edge_index.device)]
+    hop_indicator = row.new_full((num_nodes, num_nodes), -1)
+    hop_indicator[hop_masks[0]] = 0
+    for i in range(num_hops):
+        next_mask = sparse_adj.matmul(hop_masks[i].float()) > 0
+        hop_masks.append(next_mask)
+        hop_indicator[(hop_indicator == -1) & next_mask] = i+1
+    hop_indicator = hop_indicator.T  # N x N
+    node_mask = (hop_indicator >= 0)  # N x N dense mask matrix
+    return node_mask
 
 
 def random_subgraph(g, n_patches, num_hops=1):
@@ -65,27 +86,3 @@ def metis_subgraph(g, n_patches, drop_rate=0.0, num_hops=1, is_directed=False):
 
     edge_mask = node_mask[:, g.edge_index[0]] & node_mask[:, g.edge_index[1]]
     return node_mask, edge_mask
-
-
-def k_hop_subgraph(edge_index, num_nodes, num_hops, is_directed=False):
-    # return k-hop subgraphs for all nodes in the graph
-    if is_directed:
-        row, col = edge_index
-        birow, bicol = torch.cat([row, col]), torch.cat([col, row])
-        edge_index = torch.stack([birow, bicol])
-    else:
-        row, col = edge_index
-    sparse_adj = SparseTensor(
-        row=row, col=col, sparse_sizes=(num_nodes, num_nodes))
-    # each one contains <= i hop masks
-    hop_masks = [torch.eye(num_nodes, dtype=torch.bool,
-                           device=edge_index.device)]
-    hop_indicator = row.new_full((num_nodes, num_nodes), -1)
-    hop_indicator[hop_masks[0]] = 0
-    for i in range(num_hops):
-        next_mask = sparse_adj.matmul(hop_masks[i].float()) > 0
-        hop_masks.append(next_mask)
-        hop_indicator[(hop_indicator == -1) & next_mask] = i+1
-    hop_indicator = hop_indicator.T  # N x N
-    node_mask = (hop_indicator >= 0)  # N x N dense mask matrix
-    return node_mask

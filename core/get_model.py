@@ -1,4 +1,3 @@
-# from core.model import GraphMLPMixer, MPGNN
 from core.model import *
 
 
@@ -26,10 +25,10 @@ def create_model(cfg):
             nout = 12
         elif cfg.dataset == 'ogbg-molhiv':
             nout = 1
-        elif cfg.dataset == 'ogbg-molpcba':
-            nout = 128
 
     elif 'peptides' in cfg.dataset:
+        # 'peptides-func' (10-task classification)
+        # 'peptides-struct' (11-task regression)
         nfeat_node = None
         nfeat_edge = None
         node_type = 'Atom'
@@ -64,75 +63,35 @@ def create_model(cfg):
         edge_type = 'Discrete'
         nout = 2 << cfg.depth
 
-    if cfg.model.name == 'GraphMLPMixer':
-        return GraphMLPMixer(nfeat_node=nfeat_node,
-                             nfeat_edge=nfeat_edge,
-                             nhid=cfg.model.hidden_size,
-                             nout=nout,
-                             nlayer_gnn=cfg.model.nlayer_gnn,
-                             node_type=node_type,
-                             edge_type=edge_type,
-                             nlayer_mlpmixer=cfg.model.nlayer_mlpmixer,
-                             gnn_type=cfg.model.gnn_type,
-                             rw_dim=cfg.pos_enc.rw_dim,
-                             lap_dim=cfg.pos_enc.lap_dim,
-                             pooling=cfg.model.pool,
-                             dropout=cfg.train.dropout,
-                             mlpmixer_dropout=cfg.train.mlpmixer_dropout,
-                             n_patches=cfg.metis.n_patches,
-                             use_patch_pe=cfg.model.use_patch_pe)
-    elif cfg.model.name == 'GraphViT':
-        return GraphViT(nfeat_node=nfeat_node,
-                        nfeat_edge=nfeat_edge,
-                        nhid=cfg.model.hidden_size,
-                        nout=nout,
-                        nlayer_gnn=cfg.model.nlayer_gnn,
-                        node_type=node_type,
-                        edge_type=edge_type,
-                        nlayer_mlpmixer=cfg.model.nlayer_mlpmixer,
-                        gnn_type=cfg.model.gnn_type,
-                        rw_dim=cfg.pos_enc.rw_dim,
-                        lap_dim=cfg.pos_enc.lap_dim,
-                        pooling=cfg.model.pool,
-                        dropout=cfg.train.dropout,
-                        mlpmixer_dropout=cfg.train.mlpmixer_dropout,
-                        n_patches=cfg.metis.n_patches,
-                        use_patch_pe=cfg.model.use_patch_pe)
-    elif cfg.model.name == 'MPGNN':
-        return MPGNN(
-            nfeat_node=nfeat_node,
-            nfeat_edge=nfeat_edge,
-            nhid=cfg.model.hidden_size,
-            nout=nout,
-            nlayer_gnn=cfg.model.nlayer_gnn,
-            node_type=node_type,
-            edge_type=edge_type,
-            gnn_type=cfg.model.gnn_type,
-            rw_dim=cfg.pos_enc.rw_dim,
-            lap_dim=cfg.pos_enc.lap_dim,
-            pooling=cfg.model.pool,
-            dropout=cfg.train.dropout)
-    elif cfg.model.name == 'GraphMLPMixer4TreeNeighbour':
-        return GraphMLPMixer4TreeNeighbour(
-            nfeat_node=nfeat_node,
-            nfeat_edge=nfeat_edge,
-            nhid=cfg.model.hidden_size,
-            nout=nout,
-            nlayer_gnn=cfg.model.nlayer_gnn,
-            node_type=node_type,
-            edge_type=edge_type,
-            nlayer_mlpmixer=cfg.model.nlayer_mlpmixer,
-            gnn_type=cfg.model.gnn_type,
-            rw_dim=cfg.pos_enc.rw_dim,
-            lap_dim=cfg.pos_enc.lap_dim,
-            pooling=cfg.model.pool,
-            dropout=cfg.train.dropout,
-            mlpmixer_dropout=cfg.train.mlpmixer_dropout,
-            n_patches=cfg.metis.n_patches,
-            use_patch_pe=cfg.model.use_patch_pe
-        )
-    elif cfg.model.name == 'MPGNN4TreeNeighbour':
-        return MPGNN4TreeNeighbour(
+    if cfg.metis.n_patches > 0:
+        if cfg.dataset == 'TreeDataset':
+            model = GraphMLPMixer4TreeNeighbour
+        else:
+            model = GraphMLPMixer
+        return model(nfeat_node=nfeat_node,
+                     nfeat_edge=nfeat_edge,
+                     nhid=cfg.model.hidden_size,
+                     nout=nout,
+                     nlayer_gnn=cfg.model.nlayer_gnn,
+                     node_type=node_type,
+                     edge_type=edge_type,
+                     nlayer_mlpmixer=cfg.model.nlayer_mlpmixer,
+                     gMHA_type=cfg.model.gMHA_type,
+                     gnn_type=cfg.model.gnn_type,
+                     rw_dim=cfg.pos_enc.rw_dim,
+                     lap_dim=cfg.pos_enc.lap_dim,
+                     pooling=cfg.model.pool,
+                     dropout=cfg.train.dropout,
+                     mlpmixer_dropout=cfg.train.mlpmixer_dropout,
+                     n_patches=cfg.metis.n_patches,
+                     patch_rw_dim=cfg.pos_enc.patch_rw_dim)
+
+    else:
+        if cfg.dataset == 'TreeDataset':
+            model = MPGNN4TreeNeighbour
+        else:
+            model = MPGNN
+        return model(
             nfeat_node=nfeat_node,
             nfeat_edge=nfeat_edge,
             nhid=cfg.model.hidden_size,

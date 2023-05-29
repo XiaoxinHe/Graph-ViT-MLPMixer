@@ -1,7 +1,6 @@
 dataset: exp-classify
 num_workers: 8
 model:
-  name: MPGNN
   gnn_type: GINEConv
   nlayer_gnn: 4
   nlayer_mlpmixer: 0

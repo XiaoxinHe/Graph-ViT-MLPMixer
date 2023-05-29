@@ -1,4 +1,3 @@
-import torch
 import torch.nn as nn
 from einops.layers.torch import Rearrange
 
@@ -27,18 +26,17 @@ class MixerBlock(nn.Module):
         super().__init__()
         self.token_mix = nn.Sequential(
             nn.LayerNorm(dim),
-            Rearrange('b n d -> b d n'),
+            Rearrange('b p d -> b d p'),
             FeedForward(num_patch, token_dim, dropout),
-            Rearrange('b d n -> b n d')
+            Rearrange('b d p -> b p d'),
         )
         self.channel_mix = nn.Sequential(
             nn.LayerNorm(dim),
             FeedForward(dim, channel_dim, dropout),
         )
 
-    def forward(self, x, coarsen_adj):
-        a_x = torch.matmul(coarsen_adj, x) if coarsen_adj is not None else x
-        x = x + self.token_mix(a_x)
+    def forward(self, x):
+        x = x + self.token_mix(x)
         x = x + self.channel_mix(x)
         return x
 
@@ -58,9 +56,9 @@ class MLPMixer(nn.Module):
         if self.with_final_norm:
             self.layer_norm = nn.LayerNorm(nhid)
 
-    def forward(self, x, coarsen_adj=None):
+    def forward(self, x):
         for mixer_block in self.mixer_blocks:
-            x = mixer_block(x, coarsen_adj)
+            x = mixer_block(x)
         if self.with_final_norm:
             x = self.layer_norm(x)
         return x
