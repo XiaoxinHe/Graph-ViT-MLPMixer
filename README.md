@@ -5,13 +5,13 @@
 # Citation
 
 ```
-@misc{he2022generalization,
-      title={A Generalization of ViT/MLP-Mixer to Graphs}, 
-      author={Xiaoxin He and Bryan Hooi and Thomas Laurent and Adam Perold and Yann LeCun and Xavier Bresson},
-      year={2022},
-      eprint={2212.13350},
-      archivePrefix={arXiv},
-      primaryClass={cs.CV}
+@inproceedings{he2023generalization,
+  title={A generalization of vit/mlp-mixer to graphs},
+  author={He, Xiaoxin and Hooi, Bryan and Laurent, Thomas and Perold, Adam and LeCun, Yann and Bresson, Xavier},
+  booktitle={International Conference on Machine Learning},
+  pages={12724--12745},
+  year={2023},
+  organization={PMLR}
 }
 ```
 
