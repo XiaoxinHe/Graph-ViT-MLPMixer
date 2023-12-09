@@ -18,7 +18,7 @@ def config_logger(cfg, OUT_PATH="results/", time=True):
             model_name = cfg.model.gMHA_type
         else:
             model_name = 'MPGNN'
-            config_string = f'{model_name}_{cfg.model.gnn_type}_{datetime.datetime.now().strftime("%Y%m%d_%H%M%S")}'
+        config_string = f'{model_name}_{cfg.model.gnn_type}_{datetime.datetime.now().strftime("%Y%m%d_%H%M%S")}'
         # TreeNeighbour Dataset
         if cfg.depth > 0:
             config_string = config_string + '_depth' + str(cfg.depth)
